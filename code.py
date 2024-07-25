@@ -30,21 +30,31 @@ def gcCol():
     collect()
     print('mem_free', mem_free())
 
+def countdown(n):
+    # Print a countdown to the console
+    assert n > 1, "countdown argument is too small"
+    for i in range(n, 0, -1):
+        print(i)
+        sleep(1)
+
 def main():
-    # Turn off neopixel and collect garbage
+    # Turn off neopixel
     np = DigitalInOut(NEOPIXEL)
     neopixel_write(np, bytearray([0,0,0]))
-    gcCol()
-    # Initialize TFT
+    # Initialize 2.8" TFT display shield
     release_displays()
-    spi = SPI()
-    bus = FourWire(spi, command=D9, chip_select=D10)
-    display = ILI9341(bus, width=320, height=240)
     gcCol()
-    grp1 = Group()
-    display.root_group = grp1
     bmp = Bitmap(320, 240, 1)
     pal = Palette(1)
+    bus = FourWire(SPI(), command=D9, chip_select=D10)
+    display = ILI9341(bus, width=320, height=240)
+    display.rotation = 180  # landscape with Metro S3 USB port on the right
+    gcCol()
+    # Print a countdown while display is still in console mode
+    countdown(5)
+    # Switch to graphics mode and fill screen with a solid color
+    grp1 = Group()
+    display.root_group = grp1
     pal[0] = 0xAA00AA
     sprite = TileGrid(bmp, pixel_shader=pal, x=0, y=0)
     grp1.append(sprite)
